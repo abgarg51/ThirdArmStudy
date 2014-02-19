@@ -1,0 +1,80 @@
+import os
+from matplotlib import pyplot
+import math
+
+#Indexes for data
+LH = 0
+RH = 1
+HEAD_PPT_POS = 2
+HEAD_PPT_EULER = 3
+LH_PPT_EULER = 4
+RH_PPT_EULER = 5
+DATE = 6
+TIME = 7
+
+LIMB_NAMES = ['LeftHand', 'RightHand', 'HeadPosition', 'HeadEuler', 'LeftHandEuler', 'RightHandEuler']
+
+NUM_MIN = 9
+
+def dist(p1, p2):
+        return math.sqrt(math.pow(p2[0] - p1[0], 2) + math.pow(p2[1] - p1[1], 2) + math.pow(p2[2] - p1[2],2))#squarerrot((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
+
+#uses a different distance function to calculate changes in position of the third arm
+#def distEuler(p1, p2):
+#	return math.sqrt(math.pow(X(p2[0] - p1[0], 2) + math.pow(p2[1] - p1[1], 2) + math.pow(p2[2] - p1[2],2))#squarerrot((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
+def makeLine(limb):
+        lines = []
+        pyplot.clf()
+        currMin = 0
+        for i in range(len(strLines)-2):#this will make sure we don't read the last two lines which are information about the fire
+                lines.append(eval(strLines[i]))
+        prevTime = lines[0][TIME]
+        for i in range(len(strLines)-4):#does -4 so it doesnt go out of bounds and hit information about the fire
+            if (currMin < 10):
+            	#if(limb == 0 or limb == 1):#ppt tracker
+               	y = [0, dist(lines[i][limb], lines[(i + 1)][limb])]
+               	#elif(limb == 4 or limb == 5):#intersense euler
+               	#	y = [0, distEuler(lines[i][LH_PPT_EULER], lines[(i + 1)][LH_PPT_EULER], distEuler(lines[i][RH_PPT_EULER], lines[(i + 1)][RH_PPT_EULER])]
+                x = [i, i]
+                pyplot.plot(x,y)
+                v = [0, 15000, 0, .5]
+                pyplot.axis(v)
+                if lines[i][TIME] > (prevTime + 60):
+                    currMin += 1
+                    prevTime = prevTime + 60
+        pyplot.savefig(dirPre + "NewDataPlots/" + fileName.split('.')[0] + "_As_Spikes" + LIMB_NAMES[limb] + "_Plot.png") 	
+dirList = os.listdir(os.path.curdir)
+dirPre = ""
+if not os.path.exists(dirPre + "NewDataPlots"):
+        os.mkdir(dirPre + "NewDataPlots")
+        
+for fileName in dirList:
+        if fileName.endswith(".dat"):
+                print "Plotting " + fileName + "..."
+                file = open(fileName, 'r')
+                strLines = file.readlines()
+                
+                if len(strLines) == 0:
+                        print "File " + fileName + " empty, on to next!"
+                        continue 
+                makeLine(RH)
+                makeLine(LH)
+                makeLine(LH_PPT_EULER)
+                makeLine(RH_PPT_EULER)
+                
+                print "Finished!"
+                
+
+        
+
+
+
+                        
+                
+                
+                        
+                
+                        
+                
+        
+
