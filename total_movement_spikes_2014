@@ -19,10 +19,13 @@ NUM_MIN = 9
 def dist(p1, p2):
         return math.sqrt(math.pow(p2[0] - p1[0], 2) + math.pow(p2[1] - p1[1], 2) + math.pow(p2[2] - p1[2],2))#squarerrot((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
 
-#uses a different distance function to calculate changes in position of the third arm
-#def distEuler(p1, p2):
-#	return math.sqrt(math.pow(X(p2[0] - p1[0], 2) + math.pow(p2[1] - p1[1], 2) + math.pow(p2[2] - p1[2],2))#squarerrot((x1-x2)^2+(y1-y2)^2+(z1-z2)^2)
-def makeLine(limb):
+#uses a different distance function to calculate changes in position for the intersense
+
+#limb describes part of body (lefthand, righthand, leftintersense, rightintersense)
+#orientiaton describest the following:
+ORIENTATIONS = ['', 'YAW' ,'PITCH', 'ROLL']#0 means orientation not applicable
+#outputs a graph to the file with the given limb and orientation movement graph
+def makeLine(limb, orientation):
         lines = []
         pyplot.clf()
         currMin = 0
@@ -31,18 +34,15 @@ def makeLine(limb):
         prevTime = lines[0][TIME]
         for i in range(len(strLines)-4):#does -4 so it doesnt go out of bounds and hit information about the fire
             if (currMin < 10):
-            	#if(limb == 0 or limb == 1):#ppt tracker
                	y = [0, dist(lines[i][limb], lines[(i + 1)][limb])]
-               	#elif(limb == 4 or limb == 5):#intersense euler
-               	#	y = [0, distEuler(lines[i][LH_PPT_EULER], lines[(i + 1)][LH_PPT_EULER], distEuler(lines[i][RH_PPT_EULER], lines[(i + 1)][RH_PPT_EULER])]
-                x = [i, i]
                 pyplot.plot(x,y)
                 v = [0, 15000, 0, .5]
                 pyplot.axis(v)
                 if lines[i][TIME] > (prevTime + 60):
                     currMin += 1
                     prevTime = prevTime + 60
-        pyplot.savefig(dirPre + "NewDataPlots/" + fileName.split('.')[0] + "_As_Spikes" + LIMB_NAMES[limb] + "_Plot.png") 	
+        pyplot.savefig(dirPre + "NewDataPlots/" + fileName.split('.')[0] + "_As_Spikes" + LIMB_NAMES[limb] + "_" + 
+            ORIENTATIONS[orientation] + "_Plot.png") 	
 dirList = os.listdir(os.path.curdir)
 dirPre = ""
 if not os.path.exists(dirPre + "NewDataPlots"):
@@ -57,10 +57,10 @@ for fileName in dirList:
                 if len(strLines) == 0:
                         print "File " + fileName + " empty, on to next!"
                         continue 
-                makeLine(RH)
-                makeLine(LH)
-                makeLine(LH_PPT_EULER)
-                makeLine(RH_PPT_EULER)
+                makeLine(RH,0)
+                makeLine(LH,0)
+                makeLine(LH_PPT_EULER,0)
+                makeLine(RH_PPT_EULER,0)
                 
                 print "Finished!"
                 
