@@ -42,21 +42,17 @@ def dist(p1, p2, orientation):
 #outputs a graph to the file with the given limb and orientation movement graph
 def makeLine(limb, orientation):
         lines = []
-        timelines = []
         times = []
         TARGET_FRAME = 0
         FIRE_FRAME = 0
         pyplot.clf()
         currMin = 0
         for i in range(len(strLines)):
-            if i < len(strLines)-2:
+            if i < len(strLines)-2:#last two lines are for time data
                 lines.append(eval(strLines[i]))
             else:
-                timelines.append(strLines[i])    
-        for i in range(len(timelines)):
-            str = timelines[i]
-            str2 = str.split(': ')
-            times.append(float(str2[1]))
+                str2 = strLines[i].split(': ')
+                times.append(float(str2[1]))
         prevTime = lines[0][TIME]
         AGG_MOVEMENT_DURING_INTERVAL = 0 
         for i in range(len(strLines)-4):#does -4 so it doesnt go out of bounds and hit information about the fire
@@ -81,9 +77,9 @@ def makeLine(limb, orientation):
         pyplot.axvline(x=TARGET_FRAME, color='b')
         pyplot.axvline(x=FIRE_FRAME, color='r')
         pyplot.axvline(x=FIRE_FRAME + INTERVAL, color='r')
-        pyplot.savefig(dirPre + "NewDataPlotsAngel/" + fileName.split('.')[0] + "_As_Spikes" + LIMB_NAMES[limb] + "_" + 
+        pyplot.savefig(dirPre + "NewDataPlots/" + fileName.split('.')[0] + "_As_Spikes" + LIMB_NAMES[limb] + "_" + 
             ORIENTATIONS[orientation] + "_Plot.png")  
-        putOnExcel(fileName.split('.')[0], limb, orientation, AGG_MOVEMENT_DURING_INTERVAL)  
+        #putOnExcel(fileName.split('.')[0], limb, orientation, AGG_MOVEMENT_DURING_INTERVAL)  
 def calculateColumn(limbName, orientation):
     return get_column_letter((limbName + 2) + orientation * 2)
 
@@ -127,12 +123,17 @@ for fileName in dirList:
                         continue 
                 makeLine(RH,0)
                 makeLine(LH,0)
+                makeLine(HEAD_PPT_POS,0)
                 makeLine(LH_PPT_EULER,YAW)
+                makeLine(HEAD_PPT_EULER,YAW)
                 makeLine(RH_PPT_EULER,YAW)
                 makeLine(LH_PPT_EULER,PITCH)
+                makeLine(HEAD_PPT_EULER,PITCH)
                 makeLine(RH_PPT_EULER,PITCH)
                 makeLine(LH_PPT_EULER,ROLL)
+                makeLine(HEAD_PPT_EULER,ROLL)
                 makeLine(RH_PPT_EULER,ROLL)
+
                 
                 print "Finished!"
 
